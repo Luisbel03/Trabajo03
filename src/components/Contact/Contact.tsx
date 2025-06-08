@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNotifications } from '../../context/NotificationContext';
+import { useNotification } from '../../context/NotificationContext';
+import contactService from '../../services/contactService';
+import type { ContactFormData } from '../../services/contactService';
 import './Contact.css';
 
-interface FormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
 const Contact: React.FC = () => {
-  const { addNotification } = useNotifications();
-  const [formData, setFormData] = useState<FormData>({
+  const { showNotification } = useNotification();
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulación de envío
-    setTimeout(() => {
-      addNotification({
-        type: 'success',
-        title: '¡Mensaje enviado!',
-        message: 'Nos pondremos en contacto contigo pronto.'
-      });
+    setIsSubmitting(true);
+
+    try {
+      await contactService.sendMessage(formData);
+      showNotification(
+        'Gracias por contactarnos. Nuestro equipo de trabajo revisará su petición y tratará de resolverla o se pondrá en contacto con usted para resolver su problema.',
+        'success'
+      );
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: ''
       });
-    }, 1000);
+    } catch (error: any) {
+      showNotification(
+        error.message || 'Ha ocurrido un error al enviar el mensaje. Por favor, intente nuevamente.',
+        'error'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -53,36 +57,40 @@ const Contact: React.FC = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="contact-header">
-        <h1>Contáctanos</h1>
-        <p>¿Tienes un proyecto en mente? ¡Hablemos!</p>
+        <h1>Contacto</h1>
+        <p>¿Tienes alguna pregunta? Estamos aquí para ayudarte</p>
       </div>
 
       <div className="contact-content">
-        <motion.div
-          className="contact-info"
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
+        <div className="contact-info">
           <div className="info-item">
-            <h3>📍 Ubicación</h3>
-            <p>Universidad de Ciencias Informáticas (UCI) La Habana</p>
+            <span className="icon">📍</span>
+            <div>
+              <h3>Dirección</h3>
+              <p>Universidad de Ciencias Informáticas (UCI), La Habana</p>
+            </div>
           </div>
           <div className="info-item">
-            <h3>📧 Email</h3>
-            <p>luisbeltellezfajardo@gmail.com</p>
+            <span className="icon">📞</span>
+            <div>
+              <h3>Teléfono</h3>
+              <p>+53 51542283</p>
+            </div>
           </div>
           <div className="info-item">
-            <h3>📱 Teléfono</h3>
-            <p>+53 51542283</p>
+            <span className="icon">✉️</span>
+            <div>
+              <h3>Email</h3>
+              <p>info@creativeweb.com</p>
+            </div>
           </div>
-        </motion.div>
+        </div>
 
         <motion.form
           className="contact-form"
           onSubmit={handleSubmit}
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="form-group">
@@ -93,6 +101,7 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder="Nombre completo"
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -103,6 +112,7 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder="Correo electrónico"
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -113,6 +123,7 @@ const Contact: React.FC = () => {
               onChange={handleChange}
               placeholder="Asunto"
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -123,14 +134,16 @@ const Contact: React.FC = () => {
               placeholder="Mensaje"
               required
               rows={5}
+              disabled={isSubmitting}
             />
           </div>
           <motion.button
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            disabled={isSubmitting}
           >
-            Enviar mensaje
+            {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
           </motion.button>
         </motion.form>
       </div>

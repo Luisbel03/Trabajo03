@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedElement from '../AnimatedElement/AnimatedElement';
-import { useNotifications } from '../../context/NotificationContext';
+import { useNotification } from '../../context/NotificationContext';
 import './ContactForm.css';
 
 interface FormData {
@@ -29,7 +29,7 @@ const formVariants = {
 };
 
 const ContactForm: React.FC = () => {
-  const { addNotification } = useNotifications();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -89,11 +89,7 @@ const ContactForm: React.FC = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setIsSubmitting(false);
-      addNotification({
-        type: 'error',
-        title: 'Error en el formulario',
-        message: 'Por favor, completa todos los campos requeridos correctamente.'
-      });
+      showNotification('Error en el formulario', 'error');
       return;
     }
 
@@ -101,11 +97,7 @@ const ContactForm: React.FC = () => {
       // Simulación de envío al servidor
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      addNotification({
-        type: 'success',
-        title: '¡Formulario enviado!',
-        message: 'Nos pondremos en contacto contigo pronto.'
-      });
+      showNotification('¡Formulario enviado!', 'success');
 
       setFormData({
         name: '',
@@ -115,11 +107,7 @@ const ContactForm: React.FC = () => {
         description: ''
       });
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: 'Error al enviar',
-        message: 'Ha ocurrido un error. Por favor, intenta nuevamente.'
-      });
+      showNotification('Error al enviar', 'error');
     } finally {
       setIsSubmitting(false);
     }

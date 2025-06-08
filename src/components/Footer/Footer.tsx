@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            Creative Web
+            Web Creativa
           </motion.h3>
           <p className="footer-description">
             Transformando ideas en experiencias digitales excepcionales. 
@@ -135,7 +135,7 @@ const Footer: React.FC = () => {
       <div className="footer-bottom">
         <div className="container">
           <p className="copyright">
-            © {currentYear} Creative Web. Todos los derechos reservados.
+            © {currentYear} Web Creativa. Todos los derechos reservados.
           </p>
           <p className="credits">
             Diseñado y desarrollado con ❤️ en España

@@ -1,54 +1,43 @@
 .projects-container {
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .projects-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .projects-header h1 {
   font-size: 2.5rem;
-  color: #1e293b;
+  color: #333;
   margin-bottom: 1rem;
 }
 
 .projects-header p {
-  font-size: 1.1rem;
-  color: #64748b;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
 }
 
 .project-card {
   background: white;
-  border-radius: 1rem;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .project-image {
   width: 100%;
   height: 200px;
-  overflow: hidden;
-}
-
-.project-image img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.project-card:hover .project-image img {
-  transform: scale(1.1);
 }
 
 .project-content {
@@ -56,31 +45,136 @@
 }
 
 .project-content h3 {
-  color: #4f46e5;
+  font-size: 1.5rem;
+  color: #333;
   margin-bottom: 0.5rem;
-  font-size: 1.25rem;
 }
 
 .project-content p {
-  color: #4b5563;
-  margin-bottom: 1rem;
+  color: #666;
   line-height: 1.6;
+  margin-bottom: 1rem;
 }
 
-.project-tags {
+.project-technologies {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.tag {
-  background: #f1f5f9;
-  color: #4f46e5;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
+.technology-tag {
+  background: #f0f0f0;
+  color: #333;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
 }
 
+/* Estilos del Modal de E-commerce */
+.modal-content {
+  position: relative;
+  padding: 1rem;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: -1.5rem;
+  right: -1rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-button:hover {
+  color: #333;
+  background-color: #e5e5e5;
+  transform: scale(1.1);
+}
+
+.modal-close-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+.ecommerce-modal-content {
+  padding: 1rem 0;
+}
+
+.modal-section {
+  margin-bottom: 2rem;
+}
+
+.modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.modal-section h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.modal-section p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.modal-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.modal-section li {
+  color: #666;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.modal-section li::before {
+  content: "•";
+  color: #0066cc;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.video-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.video-links a {
+  color: #0066cc;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+}
+
+.video-links a:hover {
+  background-color: #e5e5e5;
+  color: #004999;
+  padding-left: 1rem;
+}
+
+/* Estilos responsivos */
 @media (max-width: 768px) {
   .projects-container {
     padding: 1rem;
@@ -92,5 +186,26 @@
 
   .projects-grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .modal-section p,
+  .modal-section li {
+    font-size: 0.95rem;
+  }
+
+  .video-links a {
+    font-size: 0.9rem;
+  }
+
+  .modal-close-button {
+    top: -1rem;
+    right: -0.5rem;
+    font-size: 1rem;
+    width: 20px;
+    height: 20px;
   }
 } 

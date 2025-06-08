@@ -35,70 +35,97 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f8fafc;
 }
 
 .navbar {
-  background: white;
+  background-color: #333;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .nav-brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #4f46e5;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .nav-links a {
-  color: #1e293b;
+  color: white;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  position: relative;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #4f46e5;
-  transition: width 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
 .nav-links a:hover {
-  color: #4f46e5;
+  background-color: #444;
 }
 
-.nav-links a:hover::after {
-  width: 100%;
+.login-nav-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.login-nav-button:hover {
+  background-color: #0056b3;
+}
+
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.login-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .main-content {
+  padding-top: 70px; /* Height of the header */
   flex: 1;
-  background: #f8fafc;
-  min-height: calc(100vh - 140px);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .footer {
-  background: #1e293b;
+  background-color: #333;
   color: white;
   text-align: center;
-  padding: 1.5rem;
+  padding: 1rem;
   margin-top: auto;
 }
 
@@ -138,18 +165,25 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem;
   }
 
-  .nav-brand {
+  .nav-left {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
     margin-bottom: 1rem;
+  }
+
+  .nav-brand {
+    text-align: center;
   }
 
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
   }
 
-  .nav-links a {
-    font-size: 0.9rem;
+  .login-nav-button {
+    width: 100%;
+    margin-top: 1rem;
   }
 }
 

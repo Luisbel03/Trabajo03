@@ -1,27 +1,23 @@
 .home-container {
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .hero-section {
   text-align: center;
   margin-bottom: 4rem;
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border-radius: 1rem;
-  color: white;
 }
 
 .hero-section h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
+  color: #333;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .hero-section p {
-  font-size: 1.25rem;
-  opacity: 0.9;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 .features-grid {
@@ -34,68 +30,115 @@
 .feature-card {
   background: white;
   padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover {
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card h3 {
-  color: #4f46e5;
-  margin-bottom: 1rem;
   font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
 }
 
 .feature-card p {
-  color: #4b5563;
+  color: #666;
   line-height: 1.6;
 }
 
 .cta-section {
   text-align: center;
-  padding: 4rem 2rem;
-  background: #f8fafc;
-  border-radius: 1rem;
-  margin-top: 2rem;
+  padding: 3rem 0;
 }
 
 .cta-section h2 {
-  font-size: 2.5rem;
-  color: #1e293b;
+  font-size: 2rem;
+  color: #333;
   margin-bottom: 1rem;
 }
 
 .cta-section p {
-  color: #64748b;
+  color: #666;
   margin-bottom: 2rem;
-  font-size: 1.1rem;
 }
 
 .cta-button {
-  background: #4f46e5;
+  background-color: #0066cc;
   color: white;
-  padding: 1rem 2rem;
   border: none;
-  border-radius: 0.5rem;
+  padding: 1rem 2rem;
   font-size: 1.1rem;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .cta-button:hover {
-  background: #4338ca;
+  background-color: #0052a3;
 }
 
+/* Estilos del Modal */
+.modal-content {
+  position: relative;
+  padding: 1rem;
+  text-align: center;
+}
+
+.modal-content h2 {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.modal-content p {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: -1.5rem;
+  right: -1rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-button:hover {
+  color: #333;
+  background-color: #e5e5e5;
+  transform: scale(1.1);
+}
+
+.modal-close-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+/* Estilos responsivos */
 @media (max-width: 768px) {
   .home-container {
     padding: 1rem;
-  }
-
-  .hero-section {
-    padding: 2rem 1rem;
   }
 
   .hero-section h1 {
@@ -106,11 +149,23 @@
     grid-template-columns: 1fr;
   }
 
-  .cta-section {
-    padding: 2rem 1rem;
+  .modal-content {
+    padding: 0.5rem;
   }
 
-  .cta-section h2 {
-    font-size: 2rem;
+  .modal-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .modal-content p {
+    font-size: 1rem;
+  }
+
+  .modal-close-button {
+    top: -1rem;
+    right: -0.5rem;
+    font-size: 1rem;
+    width: 20px;
+    height: 20px;
   }
 } 

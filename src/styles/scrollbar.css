@@ -1,0 +1,32 @@
+/* Estilo para scrollbars personalizados */
+.custom-scrollbar {
+  overflow-y: auto;
+  max-height: 80vh;
+  padding-right: 10px;
+}
+
+/* Estilo para navegadores webkit (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #0066cc;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0052a3;
+}
+
+/* Estilo para Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #0066cc #f1f1f1;
+} 

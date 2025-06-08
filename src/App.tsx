@@ -1,47 +1,90 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { NotificationProvider } from './context/NotificationContext';
+import { AuthProvider } from './context/AuthContext';
 import NotificationList from './components/Notifications/NotificationList';
+import PrivateRoute from './components/Auth/PrivateRoute';
+import Header from './components/Navigation/Header';
 import Home from './components/Home/Home';
 import Services from './components/Services/Services';
 import Projects from './components/Projects/Projects';
 import Forum from './components/Forum/Forum';
 import Contact from './components/Contact/Contact';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import EditProfile from './components/Profile/EditProfile';
+import ChangePassword from './components/Profile/ChangePassword';
+import ExploraContenidos from './components/ExploraContenidos/ExploraContenidos';
 import './App.css';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <NotificationProvider>
-        <div className="app">
-          <nav className="navbar">
-            <div className="nav-brand">Creative Web</div>
-            <div className="nav-links">
-              <Link to="/">Inicio</Link>
-              <Link to="/servicios">Servicios</Link>
-              <Link to="/proyectos">Proyectos</Link>
-              <Link to="/foro">Foro</Link>
-              <Link to="/contacto">Contacto</Link>
-            </div>
-          </nav>
-
-          <NotificationList />
-
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/servicios" element={<Services />} />
-              <Route path="/proyectos" element={<Projects />} />
-              <Route path="/foro" element={<Forum />} />
-              <Route path="/contacto" element={<Contact />} />
-            </Routes>
-          </main>
-
-          <footer className="footer">
-            <p>&copy; 2024 Creative Web. Todos los derechos reservados.</p>
-          </footer>
-        </div>
-      </NotificationProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <div className="app">
+            <NotificationList />
+            <Header />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route 
+                  path="/servicios" 
+                  element={
+                    <PrivateRoute>
+                      <Services />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/proyectos" 
+                  element={
+                    <PrivateRoute>
+                      <Projects />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/foro" 
+                  element={
+                    <PrivateRoute>
+                      <Forum />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/contacto" 
+                  element={
+                    <PrivateRoute>
+                      <Contact />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/registro" element={<Register />} />
+                <Route path="/explorar" element={<ExploraContenidos />} />
+                <Route
+                  path="/perfil"
+                  element={
+                    <PrivateRoute>
+                      <EditProfile />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/cambiar-password"
+                  element={
+                    <PrivateRoute>
+                      <ChangePassword />
+                    </PrivateRoute>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </main>
+          </div>
+        </NotificationProvider>
+      </AuthProvider>
     </Router>
   );
 };

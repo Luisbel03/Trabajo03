@@ -1,23 +1,26 @@
 import React from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { useNotifications } from '../../context/NotificationContext';
-import NotificationItem from './NotificationItem';
-import './Notifications.css';
+import { useNotification } from '../../context/NotificationContext';
+import './NotificationList.css';
 
 const NotificationsContainer: React.FC = () => {
-  const { notifications, removeNotification } = useNotifications();
+  const { notifications, removeNotification } = useNotification();
 
   return (
-    <div className="notifications-container">
-      <AnimatePresence mode="sync">
-        {notifications.map((notification) => (
-          <NotificationItem
-            key={notification.id}
-            notification={notification}
-            onRemove={removeNotification}
-          />
-        ))}
-      </AnimatePresence>
+    <div className="notification-container">
+      {notifications.map(notification => (
+        <div
+          key={notification.id}
+          className={`notification notification-${notification.type}`}
+        >
+          <span className="notification-message">{notification.message}</span>
+          <button
+            className="notification-close"
+            onClick={() => removeNotification(notification.id)}
+          >
+            ×
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

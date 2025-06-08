@@ -1,159 +1,416 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNotifications } from '../../context/NotificationContext';
+import PostForm from './PostForm';
+import Reactions, { Reaction } from './Reactions';
+import StarRating from './StarRating';
+import forumService, { ForumTopic, ForumReply } from '../../services/forumService';
+import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../context/NotificationContext';
 import './Forum.css';
 
-interface Post {
-  id: number;
-  title: string;
-  content: string;
+interface ExtendedForumReply extends ForumReply {
+  author_name: string;
   author: string;
-  date: string;
-  likes: number;
-  comments: number;
 }
 
-const initialPosts: Post[] = [
-  {
-    id: 1,
-    title: 'Tendencias en Desarrollo Web 2024',
-    content: 'Las últimas tendencias incluyen el uso de IA en desarrollo web, arquitecturas sin servidor y diseño minimalista.',
-    author: 'Ana García',
-    date: '2024-03-15',
-    likes: 24,
-    comments: 8
-  },
-  {
-    id: 2,
-    title: 'Optimización de Rendimiento en React',
-    content: 'Mejores prácticas para optimizar el rendimiento de aplicaciones React, incluyendo el uso de useMemo y useCallback.',
-    author: 'Carlos Ruiz',
-    date: '2024-03-14',
-    likes: 32,
-    comments: 12
-  },
-  {
-    id: 3,
-    title: 'Seguridad en Aplicaciones Web',
-    content: 'Guía completa sobre cómo proteger tus aplicaciones web contra vulnerabilidades comunes.',
-    author: 'Laura Martínez',
-    date: '2024-03-13',
-    likes: 18,
-    comments: 6
-  }
-];
-
 const Forum: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [newPost, setNewPost] = useState({ title: '', content: '' });
-  const { addNotification } = useNotifications();
+  const { user } = useAuth();
+  const { showNotification } = useNotification();
+  const [topics, setTopics] = useState<ForumTopic[]>([]);
+  const [replies, setReplies] = useState<{ [key: number]: ExtendedForumReply[] }>({});
+  const [newComment, setNewComment] = useState<string>('');
+  const [editingReply, setEditingReply] = useState<{ id: number, content: string } | null>(null);
+  const [activeCommentTopic, setActiveCommentTopic] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPost.title || !newPost.content) {
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Por favor completa todos los campos'
+  useEffect(() => {
+    // Depuración detallada del estado de autenticación
+    console.log('Estado de autenticación detallado:', {
+      isAuthenticated: !!user,
+      currentUser: user?.username,
+      userDetails: user
+    });
+  }, [user]);
+
+  // Función de depuración mejorada
+  const debugAuthorship = (reply: ExtendedForumReply) => {
+    console.log('Debug botones detallado:', {
+      currentUser: user?.username,
+      replyAuthor: reply.author,
+      shouldShowButtons: user?.username === reply.author,
+      userObject: user,
+      replyObject: reply
+    });
+    return user?.username === reply.author;
+  };
+
+  // Cargar temas del foro
+  useEffect(() => {
+    loadTopics();
+  }, []);
+
+  // Cargar respuestas cuando se selecciona un tema
+  useEffect(() => {
+    if (activeCommentTopic) {
+      loadReplies(activeCommentTopic);
+    }
+  }, [activeCommentTopic]);
+
+  const loadTopics = async () => {
+    try {
+      const response = await forumService.getTopics();
+      setTopics(response.data || []);
+      setError(null);
+      setLoading(false);
+    } catch (err: any) {
+      console.error('Error loading topics:', err);
+      setError(err.response?.data?.message || 'Error al cargar los temas');
+      setLoading(false);
+    }
+  };
+
+  const loadReplies = async (topicId: number) => {
+    try {
+      setError(null);
+      const response = await forumService.getReplies(topicId);
+      setReplies(prev => ({
+        ...prev,
+        [topicId]: response.data
+      }));
+    } catch (err: any) {
+      console.error('Error al cargar las respuestas:', err);
+      setError('Error al cargar las respuestas. Por favor, intenta de nuevo.');
+      showNotification('Error al cargar las respuestas', 'error');
+    }
+  };
+
+  const handleCreateTopic = async (content: string) => {
+    try {
+      setError(null);
+      const response = await forumService.createTopic({
+        title: content.split('\n')[0] || 'Sin título',
+        content,
+        category: 1, // Categoría por defecto
       });
+      setTopics(prevTopics => [response.data, ...prevTopics]);
+      setError(null); // Limpiar cualquier mensaje de error previo
+    } catch (err: any) {
+      console.error('Error creating topic:', err);
+      setError('Error al crear el tema. Por favor, intenta de nuevo.');
+    }
+  };
+
+  const handleAddComment = async (topicId: number) => {
+    if (!newComment.trim()) return;
+
+    try {
+      setError(null);
+      const response = await forumService.createReply({
+        topic: topicId,
+          content: newComment,
+      });
+
+      // Actualizar el estado de las respuestas de forma inmediata
+      setReplies(prev => ({
+        ...prev,
+        [topicId]: [...(prev[topicId] || []), {
+          ...response.data,
+          author: user?.username || '',
+          author_name: user?.username || ''
+        }]
+    }));
+
+    setNewComment('');
+      setActiveCommentTopic(null);
+      showNotification('Comentario agregado exitosamente', 'success');
+
+      // Recargar las respuestas para asegurar sincronización
+      try {
+        const updatedReplies = await forumService.getReplies(topicId);
+        setReplies(prev => ({
+          ...prev,
+          [topicId]: updatedReplies.data
+        }));
+      } catch (err) {
+        console.error('Error al recargar las respuestas:', err);
+        // No mostramos error al usuario ya que el comentario se agregó correctamente
+      }
+    } catch (err: any) {
+      console.error('Error al agregar comentario:', err);
+      setError(err.response?.data?.message || 'Error al agregar el comentario');
+      showNotification(
+        err.response?.data?.message || 'Error al agregar el comentario',
+        'error'
+      );
+    }
+  };
+
+  const handleVoteTopic = async (topicId: number, value: number) => {
+    try {
+      const response = await forumService.voteTopic(topicId, value);
+      
+      // Actualizar el tema específico con los nuevos valores de votos
+      setTopics(prevTopics => prevTopics.map(topic => {
+        if (topic.id === topicId) {
+          return {
+            ...topic,
+            votes_count: response.data.votes_count,
+            user_vote: response.data.user_vote
+          };
+        }
+        return topic;
+      }));
+    } catch (err: any) {
+      console.error('Error voting topic:', err);
+      setError('Error al votar el tema. Por favor, intenta de nuevo.');
+    }
+  };
+
+  const handleVoteReply = async (replyId: number, value: number) => {
+    try {
+      await forumService.voteReply(replyId, value);
+      // Recargar las respuestas del tema actual
+      if (activeCommentTopic) {
+        loadReplies(activeCommentTopic);
+      }
+    } catch (err) {
+      setError('Error al votar la respuesta');
+    }
+  };
+
+  const isCommentOwner = (reply: ExtendedForumReply): boolean => {
+    const isOwner = user?.username === reply.author;
+    console.log('Verificación de propiedad:', {
+      commentId: reply.id,
+      currentUser: user?.username,
+      commentAuthor: reply.author,
+      isOwner,
+      timestamp: new Date().toISOString()
+    });
+    return isOwner;
+  };
+
+  const handleEditReply = async (replyId: number, newContent: string) => {
+    try {
+      const targetReply = Object.values(replies)
+        .flat()
+        .find(reply => reply.id === replyId);
+
+      if (!targetReply || !isCommentOwner(targetReply)) {
+        showNotification('No tienes permiso para editar este comentario', 'error');
+        return;
+      }
+
+      const response = await forumService.updateReply(replyId, { content: newContent });
+      
+      setReplies(prev => {
+        const updatedReplies = { ...prev };
+        Object.keys(updatedReplies).forEach(topicId => {
+          updatedReplies[Number(topicId)] = updatedReplies[Number(topicId)].map(reply =>
+            reply.id === replyId ? { ...response.data, author: user!.username } : reply
+          );
+        });
+        return updatedReplies;
+      });
+
+      setEditingReply(null);
+      showNotification('Comentario actualizado exitosamente', 'success');
+    } catch (err: any) {
+      console.error('Error updating reply:', err);
+      showNotification(
+        err.response?.data?.message || 'Error al actualizar el comentario',
+        'error'
+      );
+    }
+  };
+
+  const handleDeleteReply = async (replyId: number) => {
+    const targetReply = Object.values(replies)
+      .flat()
+      .find(reply => reply.id === replyId);
+
+    if (!targetReply || !isCommentOwner(targetReply)) {
+      showNotification('No tienes permiso para eliminar este comentario', 'error');
       return;
     }
 
-    const post: Post = {
-      id: posts.length + 1,
-      title: newPost.title,
-      content: newPost.content,
-      author: 'Usuario Anónimo',
-      date: new Date().toISOString().split('T')[0],
-      likes: 0,
-      comments: 0
-    };
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
+      return;
+    }
 
-    setPosts([post, ...posts]);
-    setNewPost({ title: '', content: '' });
-    addNotification({
-      type: 'success',
-      title: '¡Publicación creada!',
-      message: 'Tu mensaje ha sido publicado exitosamente'
-    });
+    try {
+      await forumService.deleteReply(replyId);
+      
+      setReplies(prev => {
+        const updatedReplies = { ...prev };
+        Object.keys(updatedReplies).forEach(topicId => {
+          updatedReplies[Number(topicId)] = updatedReplies[Number(topicId)].filter(
+            reply => reply.id !== replyId
+          );
+        });
+        return updatedReplies;
+      });
+
+      showNotification('Comentario eliminado exitosamente', 'success');
+    } catch (err: any) {
+      console.error('Error deleting reply:', err);
+      showNotification(
+        err.response?.data?.message || 'Error al eliminar el comentario',
+        'error'
+      );
+    }
   };
 
-  const handleLike = (id: number) => {
-    setPosts(posts.map(post =>
-      post.id === id ? { ...post, likes: post.likes + 1 } : post
-    ));
-  };
+  if (loading) return <div className="loading">Cargando...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
-    <motion.div
-      className="forum-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="forum-header">
-        <h1>Foro de Discusión</h1>
-        <p>Comparte tus ideas y conocimientos con la comunidad</p>
-      </div>
-
-      <motion.form
-        className="new-post-form"
-        onSubmit={handleSubmit}
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
+    <div className="forum-container">
+      <motion.div
+        className="new-post-section"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
       >
-        <input
-          type="text"
-          placeholder="Título de tu publicación"
-          value={newPost.title}
-          onChange={e => setNewPost({ ...newPost, title: e.target.value })}
-        />
-        <textarea
-          placeholder="Contenido de tu publicación"
-          value={newPost.content}
-          onChange={e => setNewPost({ ...newPost, content: e.target.value })}
-          rows={4}
-        />
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          Publicar
-        </motion.button>
-      </motion.form>
+        <h2>Crear nueva publicación</h2>
+        <PostForm onSubmit={handleCreateTopic} />
+        {error && <div className="error-message">{error}</div>}
+      </motion.div>
 
-      <div className="posts-container">
+      <motion.div className="posts-section">
         <AnimatePresence>
-          {posts.map((post, index) => (
+          {topics.map(topic => (
             <motion.div
-              key={post.id}
+              key={topic.id}
               className="post-card"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              exit={{ opacity: 0, y: -20 }}
             >
-              <h3>{post.title}</h3>
-              <p className="post-content">{post.content}</p>
-              <div className="post-meta">
-                <span className="author">{post.author}</span>
-                <span className="date">{post.date}</span>
+              <div className="post-header">
+                <h3>{topic.title}</h3>
+                <span className="post-author">Por: {topic.author_name}</span>
+                <span className="post-date">
+                  {new Date(topic.created_at).toLocaleDateString()}
+                </span>
               </div>
-              <div className="post-actions">
-                <button
-                  className="like-button"
-                  onClick={() => handleLike(post.id)}
-                >
-                  👍 {post.likes}
-                </button>
-                <span className="comments">💬 {post.comments}</span>
+
+              <p className="post-content">{topic.content}</p>
+
+              <div className="post-interactions">
+                <div className="votes">
+                  <button onClick={() => handleVoteTopic(topic.id, 1)}>👍</button>
+                  <span>{topic.votes_count}</span>
+                  <button onClick={() => handleVoteTopic(topic.id, -1)}>👎</button>
+                </div>
+              </div>
+
+              <div className="comments-section">
+                {replies[topic.id]?.map(reply => (
+                  <motion.div
+                    key={reply.id}
+                    className="comment"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {editingReply?.id === reply.id ? (
+                      <div className="edit-form">
+                        <textarea
+                          value={editingReply.content}
+                          onChange={(e) => setEditingReply({ ...editingReply, content: e.target.value })}
+                          className="edit-textarea"
+                        />
+                        <div className="edit-actions">
+                          <button
+                            onClick={() => handleEditReply(reply.id, editingReply.content)}
+                            className="save-button"
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            onClick={() => setEditingReply(null)}
+                            className="cancel-button"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="comment-header">
+                          <strong>{reply.author_name}</strong>
+                    <span className="comment-date">
+                            {new Date(reply.created_at).toLocaleDateString()}
+                    </span>
+                        </div>
+                        <p>{reply.content}</p>
+                        {isCommentOwner(reply) && (
+                          <div className="comment-actions">
+                            <button
+                              onClick={() => setEditingReply({ id: reply.id, content: reply.content })}
+                              className="edit-button"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReply(reply.id)}
+                              className="delete-button"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </motion.div>
+                ))}
+
+                {activeCommentTopic === topic.id ? (
+                  <div className="add-comment">
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Escribe un comentario..."
+                      className="comment-textarea"
+                    />
+                    <div className="comment-actions">
+                      <button
+                        onClick={() => handleAddComment(topic.id)}
+                        className="submit-button"
+                        disabled={!newComment.trim()}
+                      >
+                        Enviar
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveCommentTopic(null);
+                          setNewComment('');
+                          setError(null);
+                        }}
+                        className="cancel-button"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                    {error && <div className="error-message">{error}</div>}
+                  </div>
+                ) : (
+                  <button
+                    className="add-comment-button"
+                    onClick={() => {
+                      setActiveCommentTopic(topic.id);
+                      setError(null);
+                    }}
+                  >
+                    Agregar comentario
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
