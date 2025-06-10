@@ -14,7 +14,7 @@ const projects = [
     id: 1,
     title: 'E-commerce Platform',
     description: 'Plataforma de comercio electrónico con integración de pagos y gestión de inventario.',
-    image: 'https://via.placeholder.com/300x200',
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
     technologies: ['React', 'Node.js', 'MongoDB'],
     modalType: 'ecommerce' as ModalType
   },
@@ -22,7 +22,7 @@ const projects = [
     id: 2,
     title: 'Sistema de Gestión',
     description: 'Sistema integral para la gestión de recursos empresariales.',
-    image: 'https://via.placeholder.com/300x200',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
     technologies: ['Angular', 'Django', 'PostgreSQL'],
     modalType: 'management-system' as ModalType
   },
@@ -30,7 +30,7 @@ const projects = [
     id: 3,
     title: 'Aplicación Móvil',
     description: 'App móvil para seguimiento de actividades físicas y nutrición.',
-    image: 'https://via.placeholder.com/300x200',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
     technologies: ['React Native', 'Firebase'],
     modalType: 'mobile-app' as ModalType
   }

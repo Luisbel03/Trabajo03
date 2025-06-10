@@ -85,8 +85,13 @@ const Home: React.FC = () => {
           onClick={() => openModal('modern-design')}
           style={{ cursor: 'pointer' }}
         >
-          <h3>Diseño Moderno</h3>
-          <p>Interfaces elegantes y responsivas para todo tipo de dispositivos</p>
+          <div className="feature-image">
+            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400&q=80" alt="Diseño Moderno" />
+          </div>
+          <div className="feature-content">
+            <h3>Diseño Moderno</h3>
+            <p>Interfaces elegantes y responsivas para todo tipo de dispositivos</p>
+          </div>
         </motion.div>
 
         <motion.div 
@@ -96,8 +101,13 @@ const Home: React.FC = () => {
           onClick={() => openModal('agile-development')}
           style={{ cursor: 'pointer' }}
         >
-          <h3>Desarrollo Ágil</h3>
-          <p>Soluciones rápidas y eficientes para tu negocio</p>
+          <div className="feature-image">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400&q=80" alt="Desarrollo Ágil" />
+          </div>
+          <div className="feature-content">
+            <h3>Desarrollo Ágil</h3>
+            <p>Soluciones rápidas y eficientes para tu negocio</p>
+          </div>
         </motion.div>
 
         <motion.div 
@@ -107,8 +117,13 @@ const Home: React.FC = () => {
           onClick={() => openModal('innovation')}
           style={{ cursor: 'pointer' }}
         >
-          <h3>Innovación</h3>
-          <p>Tecnologías de vanguardia para proyectos únicos</p>
+          <div className="feature-image">
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400&q=80" alt="Innovación" />
+          </div>
+          <div className="feature-content">
+            <h3>Innovación</h3>
+            <p>Tecnologías de vanguardia para proyectos únicos</p>
+          </div>
         </motion.div>
       </div>
 
